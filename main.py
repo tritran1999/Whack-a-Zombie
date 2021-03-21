@@ -91,9 +91,12 @@ class GameManager:
     def is_mole_hit(self, mouse_position, current_hole_position):
         mouse_x = mouse_position[0]
         mouse_y = mouse_position[1]
-        current_hole_x = current_hole_position[0]
-        current_hole_y = current_hole_position[1]
-        if (mouse_x > current_hole_x) and (mouse_x < current_hole_x + self.MOLE_WIDTH) and (mouse_y > current_hole_y) and (mouse_y < current_hole_y + self.MOLE_HEIGHT):
+        current_hole_x = current_hole_position[0] + (self.HOLEWIDTH-self.MOLE_WIDTH)/2
+        current_hole_y = current_hole_position[1]+self.HOLEHEIGHT-self.MOLE_HEIGHT*1.2
+        if (mouse_x > current_hole_x) \
+                and (mouse_x < current_hole_x + self.MOLE_WIDTH) \
+                and (mouse_y > current_hole_y) \
+                and (mouse_y < current_hole_y + self.MOLE_HEIGHT):
             return True
         else:
             return False
@@ -146,7 +149,6 @@ class GameManager:
                     loop = False
                 if event.type == MOUSEBUTTONDOWN and event.button == self.LEFT_MOUSE_BUTTON:
                     self.soundEffect.playFire()
-                    print(num)
                     if self.is_mole_hit(mouse.get_pos(), self.hole_positions[frame_num]) and num > 0 and left == 0:
                         num = 3
                         left = 14
@@ -187,7 +189,6 @@ class GameManager:
             if cycle_time > interval:
                 pic = self.mole[num]
                 self.screen.blit(self.background, (0, 0))
-                print(frame_num)
                 for position in self.hole_positions:
                     self.screen.blit(self.img_hole, position)
                 self.screen.blit(pic, (self.hole_positions[frame_num][0]+(self.HOLEWIDTH-self.MOLE_WIDTH)/2,

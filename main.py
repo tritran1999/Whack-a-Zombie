@@ -31,7 +31,7 @@ class GameManager:
         self.background = transform.scale(pygame.image.load("images/background.png"), (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.img_hole = transform.scale(pygame.image.load("images/hole.png"), (self.HOLEWIDTH, self.HOLEHEIGHT))
 
-        self.cursor_img = transform.scale(pygame.image.load("images/hammer.png"), (self.ZOMBIE_WIDTH, self.ZOMBIE_HEIGHT)).convert_alpha()
+        self.cursor_img = transform.scale(pygame.image.load("images/hammer.png"), (self.ZOMBIE_WIDTH, self.ZOMBIE_HEIGHT))
 
         # Font object for displaying text
         self.font_obj = pygame.font.Font('./fonts/GROBOLD.ttf', self.FONT_SIZE)
@@ -226,9 +226,17 @@ class GameManager:
                 else:
                     interval = 0.5
                 cycle_time = 0
-            # Update the display
-            self.cursor_img_rect.topleft = pygame.mouse.get_pos()  # update position 
+
+            self.screen.blit(self.background, (0, 0))
+            for position in self.hole_positions:
+                self.screen.blit(self.img_hole, position)
+            self.screen.blit(self.zombie[num], (self.hole_positions[frame_num][0]+(self.HOLEWIDTH-self.ZOMBIE_WIDTH)/2,
+                                       self.hole_positions[frame_num][1]+self.HOLEHEIGHT-self.ZOMBIE_HEIGHT*1.2))
+            self.cursor_img_rect.midleft = pygame.mouse.get_pos()  # update position 
             self.screen.blit(self.cursor_img, self.cursor_img_rect) # draw the cursor
+            self.update()
+
+            # Update the display
             pygame.display.flip()
 
 

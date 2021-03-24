@@ -19,6 +19,7 @@ class GameManager:
         self.FONT_TOP_MARGIN = 26
         self.LEVEL_SCORE_GAP = 4
         self.LEFT_MOUSE_BUTTON = 1
+        self.positions = []
         self.GAME_TITLE = "Whack A Mole - Game Programming - Assignment 1"
         # Initialize player's score, number of missed hits and level
         self.score = 0
@@ -29,6 +30,8 @@ class GameManager:
         pygame.display.set_caption(self.GAME_TITLE)
         self.background = transform.scale(pygame.image.load("images/background.png"), (self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.img_hole = transform.scale(pygame.image.load("images/hole.png"), (self.HOLEWIDTH, self.HOLEHEIGHT))
+
+        self.cursor_img = transform.scale(pygame.image.load("images/hammer.png"), (self.ZOMBIE_WIDTH, self.ZOMBIE_HEIGHT))
 
         # Font object for displaying text
         self.font_obj = pygame.font.Font('./fonts/GROBOLD.ttf', self.FONT_SIZE)
@@ -46,6 +49,10 @@ class GameManager:
         self.hole_positions = []
         # Init debugger
         self.debugger = Debugger("debug")
+        # Set mouse visibiity to false
+        pygame.mouse.set_visible(False)
+        #Set cursor to hammer img
+        self.cursor_img_rect = self.cursor_img.get_rect()
         # Sound effects
         self.soundEffect = SoundEffect()
         self.reset()
@@ -146,6 +153,7 @@ class GameManager:
             self.zombie[i] = self.zombie[i].convert_alpha()
 
         while loop:
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     loop = False
@@ -218,6 +226,16 @@ class GameManager:
                 else:
                     interval = 0.5
                 cycle_time = 0
+
+            self.screen.blit(self.background, (0, 0))
+            for position in self.hole_positions:
+                self.screen.blit(self.img_hole, position)
+            self.screen.blit(self.zombie[num], (self.hole_positions[frame_num][0]+(self.HOLEWIDTH-self.ZOMBIE_WIDTH)/2,
+                                       self.hole_positions[frame_num][1]+self.HOLEHEIGHT-self.ZOMBIE_HEIGHT*1.2))
+            self.cursor_img_rect.midleft = pygame.mouse.get_pos()  # update position 
+            self.screen.blit(self.cursor_img, self.cursor_img_rect) # draw the cursor
+            self.update()
+
             # Update the display
             pygame.display.flip()
 

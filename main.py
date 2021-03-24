@@ -170,6 +170,9 @@ class GameManager:
                     else:
                         self.misses += 1
                         self.update()
+            if self.misses > 10:
+                self.endScreen()
+                continue
 
             if num > 1:
                 self.screen.blit(self.background, (0, 0))
@@ -235,6 +238,66 @@ class GameManager:
 
             # Update the display
             pygame.display.flip()
+
+    def endScreen(self):
+        loop = True
+        while loop:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    loop = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    loop = False
+            self.screen.blit(self.background, (0,0))
+
+            # Update the player's score
+            current_score_string = "SCORE: " + str(self.score)
+            score_text = self.font_obj.render(current_score_string, True, (255, 255, 255))
+            score_text_pos = score_text.get_rect()
+            score_text_pos.centerx = self.background.get_rect().centerx
+            score_text_pos.centery = self.FONT_TOP_MARGIN*10
+            self.screen.blit(score_text, score_text_pos)
+            # Update the player's misses
+            current_misses_string = "MISSES: " + str(self.misses)
+            misses_text = self.font_obj.render(current_misses_string, True, (255, 255, 255))
+            misses_text_pos = misses_text.get_rect()
+            misses_text_pos.centerx = self.background.get_rect().centerx
+            misses_text_pos.centery = self.FONT_TOP_MARGIN*12
+            self.screen.blit(misses_text, misses_text_pos)
+            # Update the player's level
+            current_level_string = "LEVEL: " + str(self.level)
+            level_text = self.font_obj.render(current_level_string, True, (255, 255, 255))
+            level_text_pos = level_text.get_rect()
+            level_text_pos.centerx = self.background.get_rect().centerx
+            level_text_pos.centery = self.FONT_TOP_MARGIN*14
+            self.screen.blit(level_text, level_text_pos)
+            
+            # Game Over string
+            gameover_string = "GAME OVER"
+            gameover_text = self.font_obj.render(gameover_string, True, (255, 255, 255))
+            gameover_text_pos = gameover_text.get_rect()
+            gameover_text_pos.centerx = self.background.get_rect().centerx
+            gameover_text_pos.centery = self.FONT_TOP_MARGIN*5
+            self.screen.blit(gameover_text, gameover_text_pos)
+
+
+            # Continue string
+            continue_string = "Press left mouse to restart..."
+            continue_text = self.font_obj.render(continue_string, True, (255, 255, 255))
+            continue_text_pos = continue_text.get_rect()
+            continue_text_pos.centerx = self.background.get_rect().centerx
+            continue_text_pos.centery = self.FONT_TOP_MARGIN*20
+            self.screen.blit(continue_text, continue_text_pos)
+        
+
+            # Update the display
+            pygame.display.flip()
+        self.score = 0
+        self.misses = 0
+        self.level = 1
+        
+
+
 
 
 # The Debugger class - use this class for printing out debugging information

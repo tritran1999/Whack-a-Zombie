@@ -8,7 +8,7 @@ class GameManager:
         # Define constants
         self.SCREEN_WIDTH = 900
         self.SCREEN_HEIGHT = 700
-        self.FPS = 60
+        self.FPS = 120
         self.HOLEROWS = 5  # !!
         self.HOLECOLUMNS = 3  # !!
         self.HOLEWIDTH = 100
@@ -47,8 +47,6 @@ class GameManager:
         self.zombie.append(zombie_hit)
         # Positions of the holes in background
         self.hole_positions = []
-        # Init debugger
-        self.debugger = Debugger("debug")
         # Set mouse visibiity to false
         pygame.mouse.set_visible(False)
         #Set cursor to hammer img
@@ -60,8 +58,6 @@ class GameManager:
     def reset(self):
 
         # Generate hole positions
-        self.holes = []
-        self.used_holes = []
         base_row = (self.SCREEN_HEIGHT - self.FONT_TOP_MARGIN*3) / self.HOLEROWS
         base_column = self.SCREEN_WIDTH / self.HOLECOLUMNS
         for row in range(self.HOLEROWS):
@@ -158,7 +154,7 @@ class GameManager:
                 if event.type == pygame.QUIT:
                     loop = False
                 if event.type == MOUSEBUTTONDOWN and event.button == self.LEFT_MOUSE_BUTTON:
-                    self.soundEffect.playFire()
+                    self.soundEffect.playHit()
                     if self.is_zombie_hit(mouse.get_pos(), self.hole_positions[frame_num]) and num > -1 and hit_loop == 0:
                         num = 1
                         is_down = False
@@ -191,25 +187,26 @@ class GameManager:
                 is_down = False
                 interval = 0.5
                 frame_num = random.randint(0, self.HOLEROWS*self.HOLECOLUMNS-1)
-
+                self.soundEffect.playPop()
+                print(frame_num)
             mil = clock.tick(self.FPS)
             sec = mil / 1000.0
             cycle_time += sec
+            pic = self.zombie[num]
             if cycle_time > interval:
-                pic = self.zombie[num]
                 self.screen.blit(self.background, (0, 0))
                 for position in self.hole_positions:
                     self.screen.blit(self.img_hole, position)
                 self.screen.blit(pic, (self.hole_positions[frame_num][0]+(self.HOLEWIDTH-self.ZOMBIE_WIDTH)/2,
                                        self.hole_positions[frame_num][1]+self.HOLEHEIGHT-self.ZOMBIE_HEIGHT*1.2))
+
                 self.update()
                 if hit_loop ==0:
                     if is_down is False:
                         num += 1
                     else:
                         num -= 1
-                    if num == 1:
-                        self.soundEffect.playPop()
+
                 if num == 1:
                     num -= 1
                     if hit_loop > 2:
@@ -230,9 +227,9 @@ class GameManager:
             self.screen.blit(self.background, (0, 0))
             for position in self.hole_positions:
                 self.screen.blit(self.img_hole, position)
-            self.screen.blit(self.zombie[num], (self.hole_positions[frame_num][0]+(self.HOLEWIDTH-self.ZOMBIE_WIDTH)/2,
+            self.screen.blit(pic, (self.hole_positions[frame_num][0]+(self.HOLEWIDTH-self.ZOMBIE_WIDTH)/2,
                                        self.hole_positions[frame_num][1]+self.HOLEHEIGHT-self.ZOMBIE_HEIGHT*1.2))
-            self.cursor_img_rect.midleft = pygame.mouse.get_pos()  # update position 
+            self.cursor_img_rect.midleft = pygame.mouse.get_pos()  # update position
             self.screen.blit(self.cursor_img, self.cursor_img_rect) # draw the cursor
             self.update()
 
@@ -241,30 +238,21 @@ class GameManager:
 
 
 # The Debugger class - use this class for printing out debugging information
-class Debugger:
-    def __init__(self, mode):
-        self.mode = mode
 
-    def log(self, message):
-        if self.mode is "debug":
-            print("> DEBUG: " + str(message))
 
 
 class SoundEffect:
     def __init__(self):
         self.mainTrack = pygame.mixer.music.load("sounds/themesong.wav")
-        self.fireSound = pygame.mixer.Sound("sounds/fire.wav")
-        self.fireSound.set_volume(1.0)
+        self.hitSound = pygame.mixer.Sound("sounds/hit.wav")
+        self.hitSound.set_volume(5.0)
         self.popSound = pygame.mixer.Sound("sounds/pop.wav")
         self.hurtSound = pygame.mixer.Sound("sounds/hurt.wav")
         self.levelSound = pygame.mixer.Sound("sounds/point.wav")
         pygame.mixer.music.play(-1)
 
-    def playFire(self):
-        self.fireSound.play()
-
-    def stopFire(self):
-        self.fireSound.sop()
+    def playHit(self):
+        self.hitSound.play()
 
     def playPop(self):
         self.popSound.play()

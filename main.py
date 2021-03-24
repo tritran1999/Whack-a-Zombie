@@ -223,7 +223,6 @@ class GameManager:
                 else:
                     interval = 0.3
                 cycle_time = 0
-            print(interval)
 
             self.screen.blit(self.background, (0, 0))
             for position in self.hole_positions:
